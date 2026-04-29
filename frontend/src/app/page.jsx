@@ -337,7 +337,7 @@ function LoginScreen({ onLogin }) {
           Continue with GitHub
         </button>
         <p style={styles.loginNote} className="mono">
-          Runs 100% locally · No cloud · No tracking
+          Deploy & preview GitHub projects
         </p>
       </div>
     </div>

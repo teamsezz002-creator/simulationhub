@@ -156,7 +156,10 @@ function normalizeBuiltIndexPaths(projectPath, buildFolder) {
     .replace(/(src|href)='\/(?!\/)/g, "$1='./");
 
   if (normalized !== html) {
+    console.log(`📝 Rewriting absolute paths in ${indexPath}`);
     fs.writeFileSync(indexPath, normalized, "utf-8");
+  } else {
+    console.log(`ℹ️ No absolute paths to rewrite in ${indexPath}`);
   }
 }
 
@@ -249,13 +252,24 @@ app.post("/build", async (req, res) => {
     console.log(`📦 Running npm install in ${folderName}...`);
     logs.push("Running npm install...");
     await runCommand(`${getNpmCommand()} install --legacy-peer-deps`, projectPath);
+    await runCommand(`${getNpmCommand()} install --legacy-peer-deps --no-audit --no-fund`, projectPath);
     logs.push("npm install completed.");
 
     // Step 2: npm run build
 
     console.log(`🔨 Running npm run build in ${folderName}...`);
     logs.push("Running npm run build...");
-    await runCommand(`${getNpmCommand()} run build`, projectPath);
+    
+    let buildCmd = `${getNpmCommand()} run build`;
+    try {
+      const pkg = JSON.parse(fs.readFileSync(path.join(projectPath, "package.json"), "utf-8"));
+      // If it's a Vite project, explicitly add --base ./ to ensure relative paths
+      // This is more robust than post-processing HTML for Vite builds.
+      if (pkg.devDependencies?.vite || pkg.dependencies?.vite) {
+        buildCmd += " -- --base ./";
+      }
+    } catch {} // Ignore if package.json can't be read
+    await runCommand(buildCmd, projectPath);
     logs.push("Build completed.");
 
     // Step 3: Detect build output

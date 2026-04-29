@@ -10,6 +10,8 @@ export default function SimulationViewer({ url, projectName }) {
   const [loaded, setLoaded] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
 
+  console.log("SimulationViewer URL:", url); // Log the URL for debugging
+
   return (
     <div
       style={{
