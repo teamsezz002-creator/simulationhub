@@ -34,7 +34,11 @@ app.use(express.json());
 // ─── Helper: run a shell command inside a directory ──────────────────────────
 function runCommand(command, cwd) {
   return new Promise((resolve, reject) => {
-    const proc = exec(command, { cwd, maxBuffer: 1024 * 1024 * 50 });
+    const proc = exec(command, { 
+      cwd, 
+      maxBuffer: 1024 * 1024 * 100, // Increased buffer for large builds
+      env: { ...process.env, NODE_ENV: 'production' } 
+    });
 
     let stdout = "";
     let stderr = "";
@@ -46,7 +50,7 @@ function runCommand(command, cwd) {
       if (code === 0) {
         resolve({ stdout, stderr });
       } else {
-        reject(new Error(`Command failed (exit ${code}): ${stderr || stdout}`));
+        reject(new Error(`Command failed: ${stderr.split('\n').pop() || 'Unknown error'}`));
       }
     });
   });
