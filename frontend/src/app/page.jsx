@@ -18,7 +18,7 @@ async function requestJson(url, options) {
   try {
     res = await fetch(url, options);
   } catch (err) {
-    console.error("Fetch error:", err);
+    console.error("Fetch API error:", err);
     throw new Error(
       `Backend connection failed to: ${url}. Check if your backend is live at ${BACKEND}`
     );

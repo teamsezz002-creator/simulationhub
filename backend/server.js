@@ -28,9 +28,15 @@ if (!fs.existsSync(BUILDS_DIR)) {
 }
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
+app.use((req, res, next) => {
+  console.log(`📡 Incoming ${req.method} request to: ${req.url}`);
+  next();
+});
+
 const allowedOrigins = [
   "http://localhost:3000",
-  process.env.FRONTEND_URL
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL?.replace(/\/$/, "") // remove trailing slash if exists
 ].filter(Boolean);
 
 app.use(cors({ origin: allowedOrigins.length > 0 ? allowedOrigins : "*" }));
