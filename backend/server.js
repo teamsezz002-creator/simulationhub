@@ -28,7 +28,7 @@ if (!fs.existsSync(BUILDS_DIR)) {
 }
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:3000" }));
 app.use(express.json());
 
 // ─── Helper: run a shell command inside a directory ──────────────────────────
