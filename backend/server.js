@@ -17,7 +17,7 @@ const { exec } = require("child_process");
 const simpleGit = require("simple-git");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // ─── Paths ────────────────────────────────────────────────────────────────────
 const BUILDS_DIR = path.join(__dirname, "builds");
@@ -28,7 +28,12 @@ if (!fs.existsSync(BUILDS_DIR)) {
 }
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
-app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:3000" }));
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({ origin: allowedOrigins.length > 0 ? allowedOrigins : "*" }));
 app.use(express.json());
 
 // ─── Helper: run a shell command inside a directory ──────────────────────────
