@@ -54,14 +54,21 @@ function runCommand(command, cwd) {
     let stdout = "";
     let stderr = "";
 
-    proc.stdout.on("data", (d) => { stdout += d; });
-    proc.stderr.on("data", (d) => { stderr += d; });
+    proc.stdout.on("data", (d) => { 
+      stdout += d;
+      process.stdout.write(d); // Stream to Render/Local console
+    });
+    proc.stderr.on("data", (d) => { 
+      stderr += d;
+      process.stderr.write(d); // Stream to Render/Local console
+    });
 
     proc.on("close", (code) => {
       if (code === 0) {
         resolve({ stdout, stderr });
       } else {
-        reject(new Error(`Command failed: ${stderr.split('\n').pop() || 'Unknown error'}`));
+        const errorDetail = stderr.trim().split('\n').pop() || stdout.trim().split('\n').pop() || `Exit code ${code}`;
+        reject(new Error(`Command failed: ${errorDetail}`));
       }
     });
   });
@@ -250,9 +257,8 @@ app.post("/build", async (req, res) => {
     // Step 1: npm install
 
     console.log(`📦 Running npm install in ${folderName}...`);
-    logs.push("Running npm install...");
-    await runCommand(`${getNpmCommand()} install --legacy-peer-deps`, projectPath);
-    await runCommand(`${getNpmCommand()} install --legacy-peer-deps --no-audit --no-fund`, projectPath);
+    logs.push("Running npm install (this may take a while)...");
+    await runCommand(`${getNpmCommand()} install --legacy-peer-deps --no-audit --no-fund --prefer-offline`, projectPath);
     logs.push("npm install completed.");
 
     // Step 2: npm run build
