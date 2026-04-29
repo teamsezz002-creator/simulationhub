@@ -48,7 +48,6 @@ function runCommand(command, cwd) {
     const proc = exec(command, { 
       cwd, 
       maxBuffer: 1024 * 1024 * 100, // Increased buffer for large builds
-      env: { ...process.env, NODE_ENV: 'production' } 
     });
 
     let stdout = "";
@@ -258,7 +257,7 @@ app.post("/build", async (req, res) => {
 
     console.log(`📦 Running npm install in ${folderName}...`);
     logs.push("Running npm install (this may take a while)...");
-    await runCommand(`${getNpmCommand()} install --legacy-peer-deps --no-audit --no-fund --prefer-offline`, projectPath);
+    await runCommand(`${getNpmCommand()} install --include=dev --legacy-peer-deps --no-audit --no-fund`, projectPath);
     logs.push("npm install completed.");
 
     // Step 2: npm run build

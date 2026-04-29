@@ -328,7 +328,7 @@ function LoginScreen({ onLogin }) {
         </div>
         <h1 style={styles.loginTitle}>SimPortal</h1>
         <p style={styles.loginSub}>
-          Import, build & preview GitHub projects<br />entirely on your local machine.
+          Deploy, build & preview GitHub projects<br />directly in the cloud.
         </p>
         <button style={styles.githubBtn} onClick={onLogin}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
