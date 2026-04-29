@@ -11,16 +11,15 @@ import SimulationViewer from "@/components/SimulationViewer";
 import SimulationsList from "@/components/SimulationsList";
 import BuildLogger from "@/components/BuildLogger";
 
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 async function requestJson(url, options) {
   let res;
-
   try {
     res = await fetch(url, options);
   } catch {
     throw new Error(
-      "Backend request failed. Make sure the backend server is running on http://localhost:5000."
+      `Backend connection failed to: ${url}. Check if your backend is live at ${BACKEND}`
     );
   }
 
@@ -82,6 +81,10 @@ export default function HomePage() {
 
   // ── Fetch deployed simulations list ───────────────────────────────────────
   const fetchDeployed = useCallback(async () => {
+    if (!BACKEND) {
+      console.warn("Backend URL not defined");
+      return;
+    }
     setSimsLoading(true);
     try {
       const data = await requestJson(`${BACKEND}/simulations-list`);
